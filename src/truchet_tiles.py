@@ -48,21 +48,40 @@ def cal_greyscale(image, w_start, h_start, step):
 
 
 def gen_truchet_polygon(center, pattern, x_shift, y_shift, length):
-    if pattern == 'A':
-        polygon = [[0, 0], [0, length], [center * length, center * length],
-                   [length, 0], [0, 0]]
-    elif pattern == 'B':
-        polygon = [[0, 0], [0, length], [length, length],
-                   [center * length, (1 - center) * length], [0, 0]]
-    elif pattern == 'C':
-        polygon = [[length, length], [0, length],
-                   [(1 - center) * length, (1 - center) * length], [length, 0],
-                   [length, length]]
-    elif pattern == 'D':
-        polygon = [[0, 0], [(1 - center) * length, center * length],
-                   [length, length], [length, 0], [0, 0]]
+    if pattern == "A":
+        polygon = [
+            [0, 0],
+            [0, length],
+            [center * length, center * length],
+            [length, 0],
+            [0, 0],
+        ]
+    elif pattern == "B":
+        polygon = [
+            [0, 0],
+            [0, length],
+            [length, length],
+            [center * length, (1 - center) * length],
+            [0, 0],
+        ]
+    elif pattern == "C":
+        polygon = [
+            [length, length],
+            [0, length],
+            [(1 - center) * length, (1 - center) * length],
+            [length, 0],
+            [length, length],
+        ]
+    elif pattern == "D":
+        polygon = [
+            [0, 0],
+            [(1 - center) * length, center * length],
+            [length, length],
+            [length, 0],
+            [0, 0],
+        ]
     else:
-        raise ValueError('Invalid pattern: {}'.format(pattern))
+        raise ValueError("Invalid pattern: {}".format(pattern))
     polygon = [[point[0] + x_shift, point[1] + y_shift] for point in polygon]
     return polygon
 
@@ -73,15 +92,16 @@ def draw_truchet_tiles(centers, length, file_name):
     for i in range(width):
         for j in range(height):
             if (i + j) % 2 == 0:
-                pattern = 'A'
+                pattern = "A"
             else:
-                pattern = 'C'
+                pattern = "C"
             polygons.append(
-                gen_truchet_polygon(centers[i][j], pattern, i * length,
-                                    j * length, length))
+                gen_truchet_polygon(
+                    centers[i][j], pattern, i * length, j * length, length
+                )
+            )
 
-    _draw_plot(polygons, file_name, (width + 1) * length,
-               (height + 1) * length)
+    _draw_plot(polygons, file_name, (width + 1) * length, (height + 1) * length)
 
 
 def _draw_plot(polygons, file_name, width, height):
@@ -90,34 +110,34 @@ def _draw_plot(polygons, file_name, width, height):
     # for polygon in polygons:
     #     poly = Polygon(polygon, True)
     #     patches.append(poly)
-    patches = [Polygon(polygon, True) for polygon in polygons]
-    p = PatchCollection(patches,
-                        facecolors='k',
-                        edgecolors='k',
-                        linewidths=0.1)
+    patches = [Polygon(polygon) for polygon in polygons]
+    p = PatchCollection(patches, facecolors="k", edgecolors="k", linewidths=0.1)
     ax.add_collection(p)
     ax.set_xlim([0, width])
     ax.set_ylim([0, height])
-    ax.axis('equal')
+    ax.axis("equal")
     # fig.tight_layout()
     # plt.axis('off')
     ax.set_axis_off()
     plt.margins(-0.49, 0)
     # plt.show()
-    plt.savefig('{}.jpg'.format(file_name), bbox_inches='tight', pad_inches=0)
-    plt.savefig('{}.pdf'.format(file_name), bbox_inches='tight', pad_inches=0)
+    plt.savefig("{}.jpg".format(file_name), bbox_inches="tight", pad_inches=0)
+    # plt.savefig("{}.pdf".format(file_name), bbox_inches="tight", pad_inches=0)
     return
 
 
 def read_image(file_name):
-    return PIL.Image.open(file_name)
+    img = PIL.Image.open(file_name)
+    img = img.convert("L")
+    return img
 
 
 def main():
-    length = 2
-    file = os.path.join(os.pardir, 'data', 'input', 'pearl_wb.jpg')
-    out_file = os.path.join(os.pardir, 'data', 'output',
-                            'pearl_truchet_{}'.format(length))
+    length = 1
+    file = os.path.join("/workspaces/OptArt", "data", "input", "test.jpeg")
+    out_file = os.path.join(
+        "/workspaces/OptArt", "data", "output", "pearl_truchet_{}".format(length)
+    )
     image = read_image(file)
     mat = generate_truchet_tiles(image, length=length)
     centers = convert_grey_to_center(mat)
@@ -125,5 +145,5 @@ def main():
     return
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
